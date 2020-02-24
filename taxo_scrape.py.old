@@ -1,0 +1,71 @@
+#!/usr/bin/python3
+
+from sys import argv, stderr
+from re import search
+import requests
+
+URL_FORMAT = "https://en.wikipedia.org/w/index.php?title={}&action=raw"
+ERR_MSG = "Unable to retrieve, is the first argument actually the name\n" \
+          "of a Wikipedia page containing the Speciesbox template?"
+
+def get_infobox(article_name):
+    try:
+        page = requests.get(URL_FORMAT.format(argv[1])).content.decode("utf-8")
+        print(page.lower())
+        try:
+            index = page.lower().index("speciesbox")
+        except:
+            index = page.lower().index("automatic")
+        page = page[index:]
+        depth =  1
+        for i, c in enumerate(page):
+            if c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+            if depth == 0:
+                break
+        page = page[:i]
+        return page
+    except:
+        return ""
+
+def parse_infobox(text):
+    depth = 0
+    tags = []
+    tag = ""
+    for c in text:
+        if c == "|" and depth < 1:
+            tags.append(tag.strip())
+            tag = ""
+        else:
+            if c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+            tag += c        
+    return tags[0], dict([[item.strip()
+                           for item in pair.split("=", 1)]
+                           for pair in tags[1:]])
+
+if len(argv) < 2:
+    argv.append("bay_cat")
+    #print(argv)
+
+##try:
+page = get_infobox(argv[1])
+print(page, "\n")
+print(parse_infobox(page))
+    #page = page.split("|")
+    #page = [[item.strip() for item in entry.split("=")] for entry in page]
+    #page = dict(page)
+    #print(page)
+    #print("\n".join(map(repr, page)))
+    #print(search("\{Speciesbox[^\}]*\}", page).group())
+##except IndexError:
+##    print("Usage: {} article_name".format(argv[0]), file=stderr)
+##except ValueError:
+##    print("{}: {}".format(argv[0], ERR_MSG))
+    
+    
+
