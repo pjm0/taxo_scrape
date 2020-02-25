@@ -4,8 +4,9 @@ import requests
 import bs4
 
 URL_FORMAT = "https://en.wikipedia.org/w/index.php?title={}"
+core_categories = ["Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"]
 
-def get_taxo_data(article_name):
+def get_taxo_data(article_name, simplified=False):
     """ (str) -> dict of {str:str}
     Given the name of a Wikipedia article on a species or other taxon (i.e. an
     article containing a table whose class attribute is exactly "infobox biota"),
@@ -34,7 +35,8 @@ def get_taxo_data(article_name):
             td = tr.find_all('td')
             if len(td) == 2 and td[0].text.strip()[-1] == ":":
                 row = [i.text.strip().replace("\xa0", " ").replace(":", "") for i in td]
-                taxo_data.append(row)
+                if not simplified or row[0] in core_categories:
+                    taxo_data.append(row)
         return taxo_data
     except:
         return []
@@ -48,5 +50,6 @@ if __name__ == "__main__":
     
     if len(argv) != 2:
         print("Usage: {} article_name".format(argv[0]), file=stderr)
+        exit(-1)
     print(get_taxo_data(argv[1]))
 

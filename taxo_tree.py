@@ -13,7 +13,7 @@ class Taxo_tree():
         self.root = {}
 
     def add_taxon(self, taxon_name):
-        phylogeny = get_taxo_data(taxon_name)
+        phylogeny = get_taxo_data(taxon_name, True)
         parent = self.root
         for rank, name in phylogeny:
             if (rank, name) not in parent:
