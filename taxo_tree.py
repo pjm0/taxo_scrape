@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from taxo_scrape import get_taxo_data
 
@@ -21,7 +21,8 @@ class Taxo_tree():
             parent = parent[rank, name]
             
 if __name__ == "__main__":
+    from sys import argv
     test = Taxo_tree()
-    for name in "Human", "Bay cat", "Red Panda", "White Pine", "Dog", "Maned Wolf", "African Elephant", "Elephant shrew", "Raccoon", "Chimpanzee", "Capuchin monkey":
+    for name in argv[1:]:
         test.add_taxon(name)
     print_tree(test.root)

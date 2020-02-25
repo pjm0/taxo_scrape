@@ -49,7 +49,7 @@ if __name__ == "__main__":
     from sys import argv, stderr
     
     if len(argv) != 2:
-        print("Usage: {} article_name".format(argv[0]), file=stderr)
+        print("Usage: {} article_name".format(argv[0], file=stderr))
         exit(-1)
     print(get_taxo_data(argv[1]))
 
