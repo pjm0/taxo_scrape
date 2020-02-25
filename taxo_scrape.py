@@ -29,15 +29,15 @@ def get_taxo_data(article_name):
         soup = bs4.BeautifulSoup(page, "html5lib")
         table = soup.find("table", {"class": "infobox biota"})
         table_rows = table.find_all('tr')
-        taxo_data = {}
+        taxo_data = []
         for tr in table_rows:
             td = tr.find_all('td')
             if len(td) == 2 and td[0].text.strip()[-1] == ":":
                 row = [i.text.strip().replace("\xa0", " ").replace(":", "") for i in td]
-                taxo_data[row[0]] = row[1]
+                taxo_data.append(row)
         return taxo_data
     except:
-        return {}
+        return []
 
 def run_tests():
     import doctest
@@ -45,8 +45,8 @@ def run_tests():
 
 if __name__ == "__main__":
     from sys import argv, stderr
-    if len(argv) < 2:
-        argv.append("human")
-    print(get_taxo_data(argv[0]))
-#print(tag)
+    
+    if len(argv) != 2:
+        print("Usage: {} article_name".format(argv[0]), file=stderr)
+    print(get_taxo_data(argv[1]))
 
