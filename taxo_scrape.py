@@ -33,10 +33,12 @@ def get_taxo_data(article_name, simplified=False):
         taxo_data = []
         for tr in table_rows:
             td = tr.find_all('td')
-            if len(td) == 2 and td[0].text.strip()[-1] == ":":
-                row = [i.text.strip().replace("\xa0", " ").replace(":", "") for i in td]
-                if not simplified or row[0] in core_categories:
-                    taxo_data.append(row)
+            if len(td) == 2:
+                text = [item.text.strip().replace("\xa0", " ") for item in td]
+                if text[0][-1] == ":":
+                    text[0] = text[0][:-1]
+                    if not simplified or text[0] in core_categories:
+                        taxo_data.append(text)
         return taxo_data
     except:
         return []
