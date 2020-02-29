@@ -2,18 +2,24 @@
 
 from taxo_scrape import get_taxo_data
 
-def print_tree(tree, depth=0):
-    indent = "  " * depth
-    for rank, name in tree:
-        print("{}{}: {}".format(indent, rank, name))
-        print_tree(tree[rank, name], depth+1)
-
 class Taxo_tree():
-    def __init__(self):
+    def __init__(self, simplified=False):
         self.root = {}
+        self.simplified = simplified
+
+    def __str__(self):
+        return self.subtree_to_str(self.root)
+
+    def subtree_to_str(self, subtree, depth=0):
+        indent = "  " * depth
+        result = ""
+        for rank, name in subtree:
+            result += "{}{}: {}\n".format(indent, rank, name)
+            result += self.subtree_to_str(subtree[rank, name], depth+1)
+        return result
 
     def add_taxon(self, taxon_name):
-        phylogeny = get_taxo_data(taxon_name, True)
+        phylogeny = get_taxo_data(taxon_name, self.simplified)
         parent = self.root
         for rank, name in phylogeny:
             if (rank, name) not in parent:
@@ -22,7 +28,12 @@ class Taxo_tree():
             
 if __name__ == "__main__":
     from sys import argv
-    test = Taxo_tree()
-    for name in argv[1:]:
-        test.add_taxon(name)
-    print_tree(test.root)
+    from getopt import gnu_getopt as getopt
+    args = argv[1:]
+    optlist, args = getopt(args, "", ["simple"])
+    opts =  dict(optlist)
+    simplified = "--simple" in opts
+    tree = Taxo_tree(simplified)
+    for name in args:
+        tree.add_taxon(name)
+    print(tree)
